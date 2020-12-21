@@ -1,0 +1,147 @@
+$("#header_cart_nav li.href_homepage").insertBefore($("#header_main_nav > li:first-child"));
+$("#bg_footer .element_general_newsletter").prepend("<h3 id='heading'>הרשם לניוזלטר</h3>");
+$("#footer_group5 .element_general_links.f_t_g").prepend("<h3 id='links_h3_f_t_g'>בקרו אותנו גם ב:</h3>");
+$("#bg_footer #footer_group4").append('<h3 class="safe_buy">קניה מאובטחת</h3>');
+($('.layout_item.item_option2 #item_details')).append($('#item_also_buy'));
+($("#item_current_sub_title")).append($("#item_current_content"));
+($("#item_current_sub_title")).append($(".bold_link.link_ask_about_item"));
+($("#item_current_sub_title")).append($("#dealButtonHook"));
+
+$(".matchingCarousel img").each(function() {
+    var img_link = $( this ).attr('src');
+    $( this ).hide().after('<div class="image_bg" style="background:url(' + img_link + ') no-repeat center center;"></div>');
+
+
+});
+
+$("div.deal_items td.plus").html("&");
+$('input.deal:checkbox').each(function () {
+    if (this.checked) { 
+        $(this).parent('em').addClass("checked").click(function() {
+            $( this ).toggleClass( "checked" );
+        });
+    }
+});
+
+if ($(".productCarousel img")[1]) {
+    $('.mainImage').prepend('<div class="arrows"><span class="left_arrow"></span><span class="right_arrow"></span></div>');
+
+    $('.mainImage .arrows span').each(function(){
+       $(this).click(function() {
+            if ($(this).hasClass("right_arrow")) {
+
+                if($(".mainImage a").last().hasClass("active")){
+                    $(".mainImage a").removeClass("active").first().addClass( "active" );
+                    $(".productCarousel a").removeClass("active").first().addClass( "active" );
+                }
+                else{
+                    $(".mainImage a.active ").removeClass("active").nextAll("a:first").addClass( "active" );
+                    $(".productCarousel a.active").removeClass("active").next().addClass( "active" );
+                }
+            }
+            else{
+                if($(".mainImage a").first().hasClass("active")){
+                    $(".mainImage a").removeClass("active").last().addClass( "active" );
+                    $(".productCarousel a").removeClass("active").last().addClass( "active" );
+                }
+                else{
+                    $(".mainImage a.active").removeClass("active").prevAll("a:first").addClass( "active" );
+                    $(".productCarousel a.active").removeClass("active").prev().addClass( "active" );
+                }   
+            }
+        });
+    });
+}
+    
+
+
+var nav = $('#bg_header .element_general_prime_categories');
+if (nav.length > 0) {
+  var  height = nav.offset().top;
+
+  var scrolled = false;
+  $(window).scroll(function () {
+      
+      if (height < $(window).scrollTop() && !scrolled) {
+          nav.addClass( "sticky" );
+          nav.wrapAll('<div class="fix_nav_small"></div>');
+          $('.fix_nav_small').wrapAll('<div class="fix_nav_big"></div>');
+          scrolled = true;
+      }
+
+     if (height > $(window).scrollTop() && scrolled) {
+          nav.removeClass( "sticky" );
+          $('.fix_nav_small').unwrap();
+          nav.unwrap();
+          scrolled = false;      
+      }
+     
+  });
+}
+var logo = $('#header_logo a');
+if (logo.length > 0) {
+  var offset_logo = logo.offset().top;
+  var height_logo = logo.height() + 10;
+
+  var scrolled_logo = false;
+  $(window).scroll(function () {
+      if (offset_logo <= $(window).scrollTop() && !scrolled_logo) {
+          logo.addClass("mini");
+          scrolled_logo = true;
+      }
+
+     if (offset_logo >= $(window).scrollTop() && scrolled_logo) {
+          logo.removeClass("mini");
+          scrolled_logo = false;      
+      }
+  });
+}
+$('#bg_header .store_categories li ul').parent().addClass('hover_menu');
+
+$( document ).ready(function() {
+    $(".billing > span > label").last().html('*CVV<input type="text" size="30" id="cvv" name="cvv" maxlength="4" autocomplete="off">');
+});
+
+$('.layout_list_item').each(function(){
+    ($(this).find('.grid')).prepend($(this).find('.list_item_image')); 
+});
+
+$('.layout_list_item').each(function() {
+    
+    $(this).find(".list_item_current_list_item_content").children().wrapAll('<p></p>');
+    
+    var p_height = $(this).find( "p" ).height();
+    
+    if(p_height>67)
+    {
+       p_height = 67;
+    }
+
+    $(this).hover(
+          function() {
+              $(this).find( ".list_item_current_list_item_content" ).stop().animate({
+                  height: p_height + "px"
+              }, 150).parent().parent().css({"z-index": "1"});
+
+          },
+          function() {
+              $(this).find( ".list_item_current_list_item_content" ).stop().animate({
+                  height: 0
+              }, 150, function() {
+                 $(this).parent().parent().css({"z-index": "0"});
+                });
+          });
+});
+
+$("document").ready(function($){
+    var count = 0;
+  $('div#group-subcategories div.group_values').each(function(){
+    var lis = $(this).children('span.float_right');
+    var number_in_div = $(this).children('span.float_right').length/3;
+    for(var i = 0; i < lis.length; i+=number_in_div) {
+      lis.slice(i, i+number_in_div)
+         .wrapAll("<ul class='ul_wrap pos_" + count + "'> </ul>");
+         count++;
+    } 
+  });
+});

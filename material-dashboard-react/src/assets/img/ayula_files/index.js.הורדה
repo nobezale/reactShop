@@ -1,0 +1,275 @@
+var shipping_id;
+$(window).load(function() {
+  if ($('body').hasClass('layout_order')) {
+    // add event listener for changing the shipping select
+    $('select#order_shipping_option_id').change(function() {
+      // variables
+      shipping_id               = $(this).val();
+      var current_shipping_data = get_shipping_data(shipping_id);
+      var url                   = current_shipping_data["shipping_data_source"];
+      var shipping_type         = current_shipping_data["integration_type"];
+
+			// logic
+      if (url != null && typeof url != "undefined") {
+        url = url.replace("https://secure.konimbo.co.il/", "http://secure.localhost:3000/"); // FIXME remove
+        $('.externalShipping').attr('data-good-to-go', 'false');
+        init_lockers(url,shipping_type);
+      } else {
+        $('.externalShipping').slideUp('400');
+        $('.externalShipping').attr('data-good-to-go', 'true');
+      }
+    }).trigger('change');
+  }
+  
+  $('.multipleSelects label > a[href="#SelectShipping"] i').click(function(event) {
+    setTimeout(function() {
+      $('select#order_shipping_option_id').trigger('change');
+    }, 500);
+  });
+});
+
+function init_lockers(url,shipping_type) {
+  try {
+      let lSdate = new Date().toLocaleDateString();
+      let externalShipping;
+      // shows the loading img
+      $('.externalShipping').after('<div class="Sac-loader"><img data-lazy="false" src="//s3-eu-west-1.amazonaws.com/konimboassets/layout3/elements/element_general_chrome_store_list_items/loading_img.gif"></div>');
+
+      // sets the span titles
+      $('#SaC-Area-Title').text(area_text);
+      $('#SaC-City-Title').text(city_text);
+      $('#SaC-Shops-Title').text(shop_text);
+
+      if (localStorage.getItem('externalShipping-'+shipping_type+'-'+lSdate) != null && localStorage.getItem('externalShipping-'+shipping_type+'-'+lSdate) != "") {
+          externalShipping = JSON.parse(localStorage.getItem('externalShipping-'+shipping_type+'-'+lSdate));
+          got_data(externalShipping);
+      }
+      else {
+          // serverside DATA
+          $.ajax({
+              url: url,
+              type: 'GET',
+              cache: false,
+              dataType: 'json',
+              async: true,
+              contentType: false,
+              processData: false,
+              success: function(data) {
+                  localStorage.setItem('externalShipping-'+shipping_type+'-'+lSdate,JSON.stringify(data));
+                  got_data(data);
+              },
+              error: function(data) {
+                  console.log("Error in getting shops list");
+                  return false;
+              }
+          });
+          // end Data from serverside
+      }
+  } catch (error) {
+      console.log("function init_lockers -> error", error);
+  }
+}
+
+function got_data(externalShipping) {
+  if (externalShipping.length > 0) {
+
+    // opens the div nicely
+    $('.Sac-loader').fadeOut('fast');
+    $('.externalShipping').slideDown('400');
+
+    // creates the externalShipping_object (arranged by area - city)
+		var current_area;
+    externalShipping_object = {}
+    for (var i = 0; i < externalShipping.length; i++) {
+      current_area = externalShipping[i].area_name;
+      current_city = externalShipping[i].city_name;
+      if (current_area == null) {
+        current_area = all_areas;
+      }
+      if (externalShipping_object[current_area] == undefined) {
+        // if this area doesnt exist - creates it!
+        externalShipping_object[current_area] = {};
+      }
+      if (externalShipping_object[current_area][current_city] == undefined) {
+        // if this city doesn't exist - creates it!
+        externalShipping_object[current_area][current_city] = [];
+      }
+      externalShipping_object[current_area][current_city].push(externalShipping[i]);
+    }
+		
+		// change handlers
+		function areaChangeHandler(event) {
+			$this = $(event.target);
+			$('.SaC-messages').html('<span class="pre_msg">' + pre_msg + '</span>');
+			$('select#SaC-Shops').html("");
+			$('.externalShipping').attr('data-good-to-go', 'false');
+			if ($this.val() == "")
+				$('select#SaC-City').html("");
+			else
+				$('select#SaC-City').html(get_options(externalShipping_object[$this.val()]));
+		}
+		
+		function cityChangeHandler(event) {
+			$this = $(event.target);
+			$('.SaC-messages').html('<span class="pre_msg">' + pre_msg + '</span>');
+			$('.externalShipping').attr('data-good-to-go', 'false');
+			if ($this.val() == "")
+				$('select#SaC-Shops').html("");
+			else
+				$('select#SaC-Shops').html(get_shops_options(externalShipping_object[$('select#SaC-Area').val()][$('select#SaC-City').val()]));
+		}
+    
+    function setExternalShippingCookie(value) {
+      document.cookie = "shipping_option_locker_code="+value;
+    }
+    function getExternalShippingCookie(value) {
+      var nameEQ = value + "=";
+      var ca = document.cookie.split(';');
+      for(var i=0;i < ca.length;i++) {
+          var c = ca[i];
+          while (c.charAt(0)==' ') c = c.substring(1,c.length);
+          if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
+      }
+      return null;
+    }
+		
+		function shopChangeHandler(event) {
+			$this = $(event.target);
+			$('.SaC-messages').html('<span class="pre_msg">' + pre_msg + '</span>');
+			if ($this.val() != "" && $this.val() != null) {
+				$('.SaC-messages').html('');
+				$('.externalShipping').attr('data-good-to-go', 'true');
+        setExternalShippingCookie($this.val());
+				if (check_existance($this.find(':selected').attr('data-FullAddress')))
+					$('.SaC-messages').append('<div class="SaC-messages-adress"><span class="SaC-messages-title">' + adress_text + ': </span><span class="SaC-messages-text">' + $this.find(':selected').attr('data-FullAddress') + '</span>');
+				if (check_existance($this.find(':selected').attr('data-ShopPhone')))
+					$('.SaC-messages').append('<div class="SaC-messages-phone"><span class="SaC-messages-title">' + phone_text + ': </span><span class="SaC-messages-text">' + $this.find(':selected').attr('data-ShopPhone') + '</span>');
+				if (check_existance($this.find(':selected').attr('data-OpeningHours')))
+					$('.SaC-messages').append('<div class="SaC-messages-opening"><span class="SaC-messages-title">' + opening_text + ': </span><span class="SaC-messages-text">' + String($this.find(':selected').attr('data-OpeningHours')).replace(opening_text+":", "") + '</span>');
+				if (check_existance($this.find(':selected').attr('data-DirectionInstructions')))
+					$('.SaC-messages').append('<div class="SaC-messages-instructions"><span class="SaC-messages-title">' + instructions_text + ': </span><span class="SaC-messages-text">' + $this.find(':selected').attr('data-DirectionInstructions') + '</span>');
+				if (check_existance($this.find(':selected').attr('data-Comments')))
+					$('.SaC-messages').append('<div class="SaC-messages-comments"><span class="SaC-messages-title">' + comments_text + ': </span><span class="SaC-messages-text">' + $this.find(':selected').attr('data-Comments') + '</span>');
+			} else {
+				$('.externalShipping').attr('data-good-to-go', 'false');
+			}
+		}
+		
+		$('select#SaC-Area').change(areaChangeHandler);
+		$('select#SaC-City').change(cityChangeHandler);
+		$('select#SaC-Shops').change(shopChangeHandler);
+		
+    // init - inserts and areas and triggers change for init
+    $('select#SaC-Area').html(get_options(externalShipping_object));
+    $('.SaC-messages').html('<span class="pre_msg">' + pre_msg + '</span>');
+
+    // checking if there is only one area
+    if ($('select#SaC-Area').find('option').length <= 2) { // 2 options: 1. Choose. 2. All Areas.
+      $('select#SaC-Area').find('option').last().attr('selected', 'selected').trigger('change');
+      $('select#SaC-Area').parent().hide();
+    } else {
+			$('select#SaC-Area').find('option').first().attr('selected', 'selected').trigger('change');
+      $('select#SaC-Area').parent().show();
+		}
+    
+    // checking if there is selected shop already
+    if((typeof shipping_option_locker_code == undefined || shipping_option_locker_code == "") && getExternalShippingCookie('shipping_option_locker_code') != undefined) {
+      shipping_option_locker_code = getExternalShippingCookie('shipping_option_locker_code');
+    }
+    
+    if(typeof shipping_option_locker_code == "string" && shipping_option_locker_code != "") {
+      var obj_to_select = get_shop_obj(shipping_option_locker_code, externalShipping);
+      if (obj_to_select != false) {
+        if(obj_to_select.area_name != null) {
+          $('select#SaC-Area option[value="' + obj_to_select.area_name + '"]').attr('selected', 'selected').parent('select').trigger('change');
+        }
+        $('select#SaC-City option[value="' + obj_to_select.city_name + '"]').attr('selected', 'selected').parent('select').trigger('change');
+        $('select#SaC-Shops option[value="' + obj_to_select.locker_code + '"]').attr('selected', 'selected').parent('select').trigger('change');
+      }
+    }
+    
+    $('.externalShipping').attr('data-good-to-go', 'false');
+
+    $('#summery-buttons:not(.fake_summary) .smallButton a').click(function(e) {
+      e.preventDefault();
+      return false;
+    });
+		
+    $('#summery-buttons:not(.fake_summary) .smallButton a').click(function(e) {
+      var submit_ok						  = false;
+			var current_shipping_data = get_shipping_data(shipping_id);
+			var url 									= current_shipping_data["shipping_data_source"];
+			if (url != null && typeof url != "undefined") {
+        if ($('select#SaC-Shops').val() == null || $('select#SaC-Shops').val() == "") {
+          $('html,body').animate({
+            scrollTop: $('.externalShipping').offset().top - 50
+          }, 'slow');
+          $('.externalShipping').addClass('red-border');
+          return false;
+        } else
+          submit_ok = true;
+      } else
+        submit_ok = true;
+      if (submit_ok) {
+        var $this = $(this);
+        $this.addClass('active'); // use a real class instead of the psuedo-class
+        setTimeout(function() {
+          $this.removeClass('active').closest('form').submit();
+        }, 200);
+      }
+    });
+  }
+}
+
+function get_shipping_data(shipping_id) {
+  // this method gets shipping_id and returns an object, whether if it failed or succeeded
+  if (typeof current_shippings_json == "object") {
+    var shipping_data = current_shippings_json[shipping_id];
+    if (typeof shipping_data == "object") {
+      return shipping_data
+    } else {
+      console.warn("There is no Shipping Data with shipping.id=" + shipping_id + " in current_shippings_json variable.");
+    }
+  } else {
+    console.warn("There is no Shipping Hybrid, current_shippings_json is " + (typeof current_shippings_json) + ".");
+  }
+  return {};
+}
+
+function get_options(object) {
+  if (typeof object != 'undefined') {
+    var options = '<option value="">' + select_text + '</option>';
+    $.each(object, function(key, value) {
+      options += '<option value="' + key + '">' + key + '</option>';
+    });
+    return options;
+  } else {
+    console.log("function 'create_second_select' error: there is no such name as " + name);
+    return "";
+  }
+}
+
+function get_shops_options(arr) {
+  if (typeof arr != 'undefined') {
+    var options = '<option value="">' + select_text + '</option>';
+    for (var i = 0; i < arr.length; i++) {
+      options += '<option data-FullAddress="' + arr[i].full_address + '" data-DirectionInstructions="' + arr[i].direction_instructions + '" data-OpeningHours="' + arr[i].opening_hours + '" data-ShopPhone="' + arr[i].shop_phone + '" data-Comments="' + arr[i].comments + '" value="' + arr[i].locker_code + '">' + arr[i].name + ' - ' + arr[i].full_address + '</option>';
+    }
+    return options;
+  } else {
+    console.log("function 'get_shops' error: there is no such arr as " + arr);
+  }
+}
+
+function get_shop_obj(id, arr) {
+  var obj_to_ret = false;
+  $.each(arr, function(index, key) {
+    if (key.locker_code == id)
+      obj_to_ret = key;
+  });
+  return obj_to_ret;
+}
+
+function check_existance(variable) {
+	return (variable != null && variable != "null" && variable != undefined && variable != "undefined" && variable != "")
+}

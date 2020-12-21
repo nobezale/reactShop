@@ -1,0 +1,188 @@
+/* externalShipping */
+.layout_order .externalShipping {
+    width: 799px;
+    height: 130px;
+    margin: 10px auto 10px;
+    /* display: none; */
+}
+.layout_order .externalShipping > h3.epost_title {
+    display: block;
+}
+.layout_order .externalShipping > h3.epost_title * {
+    position: static;
+    padding: 0;
+    margin: 0 auto;
+}
+.layout_order .externalShipping > .SaC-selects {
+    display: inline-block;
+    width: 260px;
+}
+.layout_order .externalShipping > .SaC-selects > label {
+    width: 100%;
+    display: block;
+    margin: 0px;
+    margin-bottom: 7px;
+    height: auto;
+    background: none;
+    padding: 0;
+}
+.layout_order .externalShipping > .SaC-selects > label:last-child {
+    margin: 0px;
+}
+.layout_order .externalShipping > .SaC-selects > label > span {
+    display: block;
+    float: none;
+    width: 43px;
+    line-height: 16px;
+    font-size: 14px;
+    color: #231f20;
+    font-weight: normal;
+}
+.layout_order .externalShipping > .SaC-selects > label > select {
+    display: inline-block;
+    width: 100%;
+}
+.layout_order .externalShipping > .SaC-messages {
+    width: 506px;
+    height: auto;
+    min-height: 100px;
+    display: inline-block;
+    float: left;
+    margin-right: 29px;
+    font-size: 13px;
+    line-height: 17px;
+    padding: 10px 30px;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    border: solid 1px #e0dede;
+    -webkit-border-radius: 4px/5px 5px 4px 4px;
+    -moz-border-radius: 4px/5px 5px 4px 4px;
+    border-radius: 4px/5px 5px 4px 4px;
+    margin-top: 16px;
+    background-color: #fff;
+}
+.Sac-loader img {
+    margin: 0 auto;
+}
+.layout_order .externalShipping.red-border select {
+    border-color: #E44044 !important;
+}
+
+/* mobile & responsive version */
+.mobile.layout_order .externalShipping,
+.layout_responsive.layout_order .externalShipping {
+    width: 100%;
+    height: 100px;
+}
+.mobile.layout_order .externalShipping > .SaC-selects,
+.layout_responsive.layout_order .externalShipping > .SaC-selects {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label,
+.layout_responsive.layout_order .externalShipping > .SaC-selects > label {
+    height: 24px;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label > span,
+.layout_responsive.layout_order .externalShipping > .SaC-selects > label > span {
+    display: inline-block;
+    float: right;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label > span,
+.layout_responsive.layout_order .externalShipping > .SaC-selects > label > span {
+    display: inline-block;
+    float: right;
+    text-align: right;
+    font-weight: bold;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label > span:after,
+.layout_responsive.layout_order .externalShipping > .SaC-selects > label > span:after {
+    content: ":";
+}
+.mobile.layout_order .externalShipping > .SaC-messages,
+.layout_responsive.layout_order .externalShipping > .SaC-messages {
+    width: 100%;
+    height: auto;
+    padding: 10px !important;
+    margin-bottom: 10px !important;
+    text-align: right;
+}
+.mobile.layout_order span.error,
+.layout_responsive.layout_order span.error {
+    min-height: 19px;
+    display: inline-block;
+    float: left;
+}
+.mobile.layout_order #wrapper .fixed_buttons,
+.layout_responsive.layout_order #wrapper .fixed_buttons {
+    display: none;
+}
+.mobile label#cart_shipping_option:after, 
+.mobile label#cart_num_of_payments:after,
+.layout_responsive label#cart_shipping_option:after, 
+.layout_responsive label#cart_num_of_payments:after {
+    bottom: -2px;
+    top: auto;
+}
+.layout_order.body_error.mobile input.error + .clear_btn,
+.layout_order.body_error.layout_responsive input.error + .clear_btn {
+    bottom: 0px !important;
+}
+
+.mobile.layout_order #wrapper label#cart_shipping_option span.title {
+    display: block;
+    max-width: none;
+    float: none;
+}
+.mobile.layout_order #wrapper select#order_shipping_option_id {
+    display: block;
+    max-width: 100%;
+    float: none;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label > span {
+    display: block;
+    float: none;
+    width: 100%;
+}
+.mobile.layout_order #wrapper .externalShipping > .SaC-selects > label > select {
+    max-width: none;
+    display: block;
+    float: none;
+}
+.mobile.layout_order .externalShipping > .SaC-selects > label {
+    height: auto;
+}
+
+@media screen and (max-width: 767px) {
+    .layout_order #wrapper label#cart_shipping_option span.title {
+        display: block;
+        max-width: none;
+        float: none;
+    }
+    .layout_order #wrapper select#order_shipping_option_id {
+        display: block;
+        max-width: 100%;
+        float: none;
+    }
+    .layout_order #wrapper .externalShipping > .SaC-selects > label > span {
+        display: block;
+        float: none;
+        width: 100%;
+    }
+    .layout_order #wrapper .externalShipping > .SaC-selects > label > select {
+        max-width: none;
+        display: block;
+        float: none;
+    }
+    .layout_order #wrapper .externalShipping > .SaC-selects > label {
+        height: auto;
+    }
+    .layout_order #wrapper label#cart_shipping_option:after {
+        bottom: 21px;
+    }
+}
+/* end mobile version */
+
+/* end externalShipping */

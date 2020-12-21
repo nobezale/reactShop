@@ -1,0 +1,12 @@
+html {direction:rtl;}
+.menu, .breadcrumbs, .print_link, .footer, .location-map, .secureHolder, .secure { display:none;}
+
+/* item page */
+.prodDesc b, .prodDesc .list, .prodDesc .bold_link, #techDetailsHook, .prodDesc .buyNow, .LikePluginPagelet, .specifications, .smallButton,
+#techDetailsAName, #backToTopHook, #productCarouselHook, #features, #zapReviews, .mainImage b, #featuresHook, #desc, #matchingCarouselHook, #also_buy { display:none;}
+
+
+/* item page liquid */
+#bread_crumbs, #header_main_nav, #header_cart_nav, .search, #item_show_facebook, .bold_link.link_ask_about_item, #bg_footer, #konimbo_website, #big_buy_now_link, #backToTopHook {display: none;}
+
+#main_nav_bg, .element_general_images, .addthis_toolbox, #item_info, #header_show_search, #header_secure_link {display: none;}
